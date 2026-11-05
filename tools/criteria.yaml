@@ -1,0 +1,52 @@
+# Acceptance criteria of the D3.2.1 and where their evidence comes from.
+# evidence: tests (pytest names starting with test_<ID>_), national (maps/checks.py),
+# inspection (reading code or outputs; `verified: <date>` once done), external (depends on
+# something outside the repository).
+R1: {evidence: [tests, national]}
+R2: {evidence: [inspection], verified: 2026-11-05, note: "src/maps_sll/cli.py: every parameter and input path comes from the scenario file; --manifest-extra is only copied into the manifest"}
+R3: {evidence: [external], note: "run on a second machine"}
+R4: {evidence: [tests]}
+R5: {evidence: [tests]}
+R6: {evidence: [tests, national]}
+C1: {evidence: [tests, national]}
+C2: {evidence: [tests]}
+C3: {evidence: [tests]}
+C4: {evidence: [tests]}
+C5: {evidence: [tests]}
+C6: {evidence: [tests]}
+I1: {evidence: [tests]}
+I2: {evidence: [tests], note: "database part depends on decision D9"}
+I3: {evidence: [tests]}
+I4: {evidence: [tests]}
+I5: {evidence: [tests], note: "database part depends on decision D9"}
+I6: {evidence: [tests]}
+I7: {evidence: [tests]}
+A1: {evidence: [tests]}
+A2: {evidence: [tests]}
+A3: {evidence: [tests]}
+A4: {evidence: [tests]}
+A5: {evidence: [tests]}
+A6: {evidence: [tests]}
+A7: {evidence: [tests]}
+A8: {evidence: [tests]}
+A9: {evidence: [tests]}
+A10: {evidence: [tests]}
+A11: {evidence: [tests]}
+A12: {evidence: [tests]}
+S1: {evidence: [national]}
+S2: {evidence: [tests]}
+S3: {evidence: [tests]}
+S4: {evidence: [tests]}
+S5: {evidence: [tests, national]}
+S6: {evidence: [tests, national]}
+S7: {evidence: [tests]}
+S8: {evidence: [tests, national]}
+O1: {evidence: [external], note: "schema of the MAPS table of the attractors, decision D9"}
+O1b: {evidence: [tests]}
+O2: {evidence: [tests, national]}
+O3: {evidence: [tests, national]}
+O5: {evidence: [tests]}
+O6: {evidence: [tests]}
+P1: {evidence: [national]}
+P2: {evidence: [tests, national]}
+P3: {evidence: [inspection], verified: 2026-11-05, note: "verified by reading the code: the package has no geometry or routing dependency and build_problem only reads the travel-time and contiguity tables; the 30-minute variant (maps/checks.py --variant-run) reports its timings"}

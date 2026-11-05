@@ -1,0 +1,30 @@
+# Phase 1 parametrisation in use for MAPS (D3.2.1 appendix A1, "Regole di livello";
+# decisions D4, D7, D16). Rules are evaluated in order; the first that applies wins.
+# Attributes per unit: population; n_health (health facilities of any kind, DEA included);
+# n_dea (DEA of first or second level); n_secondary_schools (upper-secondary schools);
+# station_category (highest RFI category of the stations in the unit).
+ordinal_attributes:
+  station_category: [bronze, silver, gold, platinum]
+rules:
+  - {id: L1, level: 1, all: [{attr: population, op: ">=", value: 250000}]}
+  - {id: L2, level: 2, all: [{attr: population, op: ">=", value: 100000}]}
+  - {id: L3, level: 3, all: [{attr: population, op: ">=", value: 50000}]}
+  - id: L4
+    level: 4
+    all:
+      - {attr: n_dea, op: ">=", value: 1}
+      - {attr: n_secondary_schools, op: ">", value: 1}
+      - {attr: station_category, op: ">=", value: silver}
+  - id: L5
+    level: 5
+    all:
+      - {attr: n_health, op: ">=", value: 1}
+      - {attr: n_secondary_schools, op: ">=", value: 1}
+      - {attr: station_category, op: ">=", value: bronze}
+  - id: L6
+    level: 6
+    exactly: 2
+    of:
+      - {name: health, attr: n_health, op: ">=", value: 1}
+      - {name: school, attr: n_secondary_schools, op: ">=", value: 1}
+      - {name: station, attr: station_category, op: ">=", value: bronze}
