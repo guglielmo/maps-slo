@@ -1,5 +1,5 @@
-import maps_sll
+import maps_slo
 
 
 def test_version_is_set():
-    assert maps_sll.__version__
+    assert maps_slo.__version__

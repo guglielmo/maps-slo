@@ -1,14 +1,14 @@
-# maps-sll — Implementation Plan
+# maps-slo — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** build the `maps-sll` library as two separate algorithms, each run and calibrated on its own — the level calculation (phase 1, `maps-sll levels`) and the aggregation (phases 2–4, `maps-sll run`) — and the MAPS application that runs it on the Italian municipalities, with every acceptance criterion of the D3.2.1 traceable to a test or a national check.
+**Goal:** build the `maps-slo` library as two separate algorithms, each run and calibrated on its own — the level calculation (phase 1, `maps-slo levels`) and the aggregation (phases 2–4, `maps-slo run`) — and the MAPS application that runs it on the Italian municipalities, with every acceptance criterion of the D3.2.1 traceable to a test or a national check.
 
-**Architecture:** generic engine in `src/maps_sll/` working on opaque unit identifiers; numpy dense travel-time matrix; phases 2 and 4 produce one pointer per unit, a single resolver follows the chains with cycle protection; all parameters come from a YAML scenario. The Italian part (conversion of the GSSI files, reconduction of the 2021 matrix, MAPS scenario) lives in `maps/`, outside the package.
+**Architecture:** generic engine in `src/maps_slo/` working on opaque unit identifiers; numpy dense travel-time matrix; phases 2 and 4 produce one pointer per unit, a single resolver follows the chains with cycle protection; all parameters come from a YAML scenario. The Italian part (conversion of the GSSI files, reconduction of the 2021 matrix, MAPS scenario) lives in `maps/`, outside the package.
 
 **Tech Stack:** Python 3.13, uv, numpy, pandas, pyarrow, pydantic v2, PyYAML, pytest, ruff; DuckDB only in `maps/` for the data preparation.
 
-**Design:** `journal/2026-11-04-design-maps-sll.md`. Normative references: appendix A1 (specification) and main document (criteria) of the MAPS deliverable D3.2.1.
+**Design:** `journal/2026-11-04-design-maps-slo.md`. Normative references: appendix A1 (specification) and main document (criteria) of the MAPS deliverable D3.2.1.
 
 **Decision of 2026-11-05.** The two algorithms are never chained in one command: levels are a product of their own, with their own manifest, so each can be calibrated without re-running the other. The national aggregation starts from the GSSI levels (`centralità.dta`) until the services data for all municipalities are agreed with GSSI.
 
@@ -21,20 +21,20 @@
 | File | Responsibility |
 |---|---|
 | `pyproject.toml` | package metadata, dependencies, pytest and ruff config |
-| `src/maps_sll/__init__.py` | public API, `__version__` |
-| `src/maps_sll/scenario.py` | `Scenario` model, invariant checks, `load_scenario()` |
-| `src/maps_sll/inputs.py` | `Inputs` (three DataFrames + times description), file loading, fingerprints |
-| `src/maps_sll/problem.py` | `Problem` (arrays indexed by unit position), `build_problem()`, `InputError` |
-| `src/maps_sll/labels.py` | `resolve()` of pointer chains, `ChainError` |
-| `src/maps_sll/phase2.py` | merges between contiguous centralities |
-| `src/maps_sll/phase3.py` | assignment of non-centralities, `Phase3Result` |
-| `src/maps_sll/phase4.py` | single-unit systems, `Phase4Result` |
-| `src/maps_sll/engine.py` | `run()`, `Result`, rule and phase per unit, timings |
-| `src/maps_sll/output.py` | units/systems/distant/unassigned tables, `write_outputs()` |
-| `src/maps_sll/metrics.py` | V2–V5, V9, V10 |
-| `src/maps_sll/manifest.py` | run manifest |
-| `src/maps_sll/levels.py` | phase-1 rule engine |
-| `src/maps_sll/cli.py` | `maps-sll run` and `maps-sll levels` |
+| `src/maps_slo/__init__.py` | public API, `__version__` |
+| `src/maps_slo/scenario.py` | `Scenario` model, invariant checks, `load_scenario()` |
+| `src/maps_slo/inputs.py` | `Inputs` (three DataFrames + times description), file loading, fingerprints |
+| `src/maps_slo/problem.py` | `Problem` (arrays indexed by unit position), `build_problem()`, `InputError` |
+| `src/maps_slo/labels.py` | `resolve()` of pointer chains, `ChainError` |
+| `src/maps_slo/phase2.py` | merges between contiguous centralities |
+| `src/maps_slo/phase3.py` | assignment of non-centralities, `Phase3Result` |
+| `src/maps_slo/phase4.py` | single-unit systems, `Phase4Result` |
+| `src/maps_slo/engine.py` | `run()`, `Result`, rule and phase per unit, timings |
+| `src/maps_slo/output.py` | units/systems/distant/unassigned tables, `write_outputs()` |
+| `src/maps_slo/metrics.py` | V2–V5, V9, V10 |
+| `src/maps_slo/manifest.py` | run manifest |
+| `src/maps_slo/levels.py` | phase-1 rule engine |
+| `src/maps_slo/cli.py` | `maps-slo run` and `maps-slo levels` |
 | `tests/builders.py` | helpers to build hand-written cases |
 | `tests/test_*.py` | one module per area, test names carry the criterion id |
 | `maps/prepare/convert.py` | GSSI `.dta` → Parquet |
@@ -54,13 +54,13 @@ Hand-built cases are written as Python builders in the test modules, not as YAML
 ### Task 1: Scaffold
 
 **Files:**
-- Create: `pyproject.toml`, `src/maps_sll/__init__.py`, `tests/test_smoke.py`, `LICENSE`, `README.md`, `.github/workflows/tests.yml`
+- Create: `pyproject.toml`, `src/maps_slo/__init__.py`, `tests/test_smoke.py`, `LICENSE`, `README.md`, `.github/workflows/tests.yml`
 
 - [ ] **Step 1: Write `pyproject.toml`**
 
 ```toml
 [project]
-name = "maps-sll"
+name = "maps-slo"
 version = "0.1.0"
 description = "Homogeneous local systems (SLO): partition of territorial units around centralities"
 readme = "README.md"
@@ -79,14 +79,14 @@ dev = ["pytest>=8", "ruff>=0.6"]
 maps = ["duckdb>=1.1"]
 
 [project.scripts]
-maps-sll = "maps_sll.cli:main"
+maps-slo = "maps_slo.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/maps_sll"]
+packages = ["src/maps_slo"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -97,15 +97,15 @@ addopts = "-q"
 line-length = 100
 ```
 
-- [ ] **Step 2: Write `src/maps_sll/__init__.py`**
+- [ ] **Step 2: Write `src/maps_slo/__init__.py`**
 
 ```python
-"""maps-sll: homogeneous local systems (SLO) around centralities."""
+"""maps-slo: homogeneous local systems (SLO) around centralities."""
 
 from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = version("maps-sll")
+    __version__ = version("maps-slo")
 except PackageNotFoundError:  # running from a source tree without installation
     __version__ = "0.0.0+unknown"
 ```
@@ -113,16 +113,16 @@ except PackageNotFoundError:  # running from a source tree without installation
 - [ ] **Step 3: Write the smoke test `tests/test_smoke.py`**
 
 ```python
-import maps_sll
+import maps_slo
 
 
 def test_version_is_set():
-    assert maps_sll.__version__
+    assert maps_slo.__version__
 ```
 
 - [ ] **Step 4: Create the environment and run the test**
 
-Run: `cd maps-sll && uv venv --python 3.13 && uv pip install -e '.[dev,maps]' && .venv/bin/pytest`
+Run: `cd maps-slo && uv venv --python 3.13 && uv pip install -e '.[dev,maps]' && .venv/bin/pytest`
 Expected: `1 passed`
 
 - [ ] **Step 5: Write `LICENSE` (MIT, "Copyright (c) 2026 Gran Sasso Tech") and `README.md`**
@@ -130,7 +130,7 @@ Expected: `1 passed`
 `README.md`:
 
 ```markdown
-# maps-sll
+# maps-slo
 
 Partition of a set of territorial units into homogeneous local systems (SLO), each headed by a
 centrality, from three inputs: a level per unit, a contiguity matrix and a travel-time matrix.
@@ -138,11 +138,11 @@ The rules are those of the MAPS project methodology (Gran Sasso Tech, GSSI); eve
 declared in a YAML scenario, and the engine assumes nothing about the identifiers, the number of
 units or the number of levels.
 
-    maps-sll run scenario.yaml --out output/
+    maps-slo run scenario.yaml --out output/
 
 ## Italiano
 
-`maps-sll` è la libreria dell'Algoritmo SLO del progetto MAPS (deliverable D3.5). La cartella
+`maps-slo` è la libreria dell'Algoritmo SLO del progetto MAPS (deliverable D3.5). La cartella
 `maps/` contiene l'applicazione ai comuni italiani: conversione dei dati GSSI, riconduzione della
 matrice dei tempi 2021 ai confini 2025, scenario MAPS. I dati non sono nel repository: la licenza
 della matrice dei tempi ISTAT su grafo TomTom è in corso di verifica, e finché non è chiarita
@@ -170,7 +170,7 @@ jobs:
 - [ ] **Step 7: Commit**
 
 ```bash
-git add -A && git commit -m "chore: scaffold maps-sll package"
+git add -A && git commit -m "chore: scaffold maps-slo package"
 ```
 
 ---
@@ -178,7 +178,7 @@ git add -A && git commit -m "chore: scaffold maps-sll package"
 ### Task 2: Scenario
 
 **Files:**
-- Create: `src/maps_sll/scenario.py`, `tests/builders.py` (scenario part), `tests/test_scenario.py`
+- Create: `src/maps_slo/scenario.py`, `tests/builders.py` (scenario part), `tests/test_scenario.py`
 
 - [ ] **Step 1: Write `tests/builders.py` (scenario part only; the rest comes in Task 3)**
 
@@ -187,7 +187,7 @@ git add -A && git commit -m "chore: scaffold maps-sll package"
 
 from __future__ import annotations
 
-from maps_sll.scenario import Scenario
+from maps_slo.scenario import Scenario
 
 MAPS = {
     "name": "test-maps",
@@ -213,7 +213,7 @@ def scenario(**overrides) -> Scenario:
 import pytest
 
 from builders import MAPS, scenario
-from maps_sll.scenario import load_scenario
+from maps_slo.scenario import load_scenario
 
 
 def test_maps_scenario_is_valid():
@@ -261,9 +261,9 @@ def test_load_scenario_from_yaml(tmp_path):
 - [ ] **Step 3: Run the tests to verify they fail**
 
 Run: `.venv/bin/pytest tests/test_scenario.py`
-Expected: FAIL, `ModuleNotFoundError: No module named 'maps_sll.scenario'`
+Expected: FAIL, `ModuleNotFoundError: No module named 'maps_slo.scenario'`
 
-- [ ] **Step 4: Write `src/maps_sll/scenario.py`**
+- [ ] **Step 4: Write `src/maps_slo/scenario.py`**
 
 ```python
 """Scenario: the only source of parameters of an execution (criterion R2)."""
@@ -364,7 +364,7 @@ git add -A && git commit -m "feat: scenario model with phase-2 invariant"
 ### Task 3: Inputs and problem
 
 **Files:**
-- Create: `src/maps_sll/inputs.py`, `src/maps_sll/problem.py`, `tests/test_problem.py`
+- Create: `src/maps_slo/inputs.py`, `src/maps_slo/problem.py`, `tests/test_problem.py`
 - Modify: `tests/builders.py` (append)
 
 - [ ] **Step 1: Replace `tests/builders.py` with the full version**
@@ -376,10 +376,10 @@ from __future__ import annotations
 
 import pandas as pd
 
-# from maps_sll.engine import run  # uncomment in Task 7
-from maps_sll.inputs import Inputs
-from maps_sll.problem import Problem, build_problem
-from maps_sll.scenario import Scenario
+# from maps_slo.engine import run  # uncomment in Task 7
+from maps_slo.inputs import Inputs
+from maps_slo.problem import Problem, build_problem
+from maps_slo.scenario import Scenario
 
 MAPS = {
     "name": "test-maps",
@@ -459,7 +459,7 @@ import numpy as np
 import pytest
 
 from builders import make_inputs, problem, scenario
-from maps_sll.problem import InputError, build_problem
+from maps_slo.problem import InputError, build_problem
 
 
 def test_arrays_are_indexed_by_position():
@@ -521,9 +521,9 @@ def test_duplicate_ids_rejected():
 - [ ] **Step 3: Run the tests to verify they fail**
 
 Run: `.venv/bin/pytest tests/test_problem.py`
-Expected: FAIL, `ModuleNotFoundError: No module named 'maps_sll.inputs'`
+Expected: FAIL, `ModuleNotFoundError: No module named 'maps_slo.inputs'`
 
-- [ ] **Step 4: Write `src/maps_sll/inputs.py`**
+- [ ] **Step 4: Write `src/maps_slo/inputs.py`**
 
 ```python
 """Inputs of the algorithm: units, contiguity, travel times (specification A1, "Perimetro")."""
@@ -610,7 +610,7 @@ def _frame_sha256(df: pd.DataFrame) -> str:
     return "sha256:" + hashlib.sha256(values.tobytes()).hexdigest()
 ```
 
-- [ ] **Step 5: Write `src/maps_sll/problem.py`**
+- [ ] **Step 5: Write `src/maps_slo/problem.py`**
 
 ```python
 """The problem in array form: every unit has a position, every relation an index."""
@@ -789,7 +789,7 @@ git add -A && git commit -m "feat: inputs and problem arrays with declared id or
 ### Task 4: Label resolution
 
 **Files:**
-- Create: `src/maps_sll/labels.py`, `tests/test_labels.py`
+- Create: `src/maps_slo/labels.py`, `tests/test_labels.py`
 
 - [ ] **Step 1: Write the failing tests `tests/test_labels.py`**
 
@@ -797,7 +797,7 @@ git add -A && git commit -m "feat: inputs and problem arrays with declared id or
 import numpy as np
 import pytest
 
-from maps_sll.labels import ChainError, resolve
+from maps_slo.labels import ChainError, resolve
 
 
 def test_A4_chain_resolves_to_the_root():
@@ -822,7 +822,7 @@ def test_A9_chain_longer_than_declared_raises():
 Run: `.venv/bin/pytest tests/test_labels.py`
 Expected: FAIL, `ModuleNotFoundError`
 
-- [ ] **Step 3: Write `src/maps_sll/labels.py`**
+- [ ] **Step 3: Write `src/maps_slo/labels.py`**
 
 ```python
 """Recursive resolution of the attraction label (A1, "Che cosa significa «unita»")."""
@@ -888,13 +888,13 @@ git add -A && git commit -m "feat: chain resolution with cycle and length guard"
 ### Task 5: Phase 2
 
 **Files:**
-- Create: `src/maps_sll/phase2.py`, `tests/test_phase2.py`
+- Create: `src/maps_slo/phase2.py`, `tests/test_phase2.py`
 
 - [ ] **Step 1: Write the failing tests `tests/test_phase2.py`**
 
 ```python
 from builders import MAPS, problem, scenario
-from maps_sll.phase2 import phase2
+from maps_slo.phase2 import phase2
 
 
 def merged_to(p, ptr, uid):
@@ -997,7 +997,7 @@ def test_I3_removed_pair_changes_the_result():
 Run: `.venv/bin/pytest tests/test_phase2.py`
 Expected: FAIL, `ModuleNotFoundError`
 
-- [ ] **Step 3: Write `src/maps_sll/phase2.py`**
+- [ ] **Step 3: Write `src/maps_slo/phase2.py`**
 
 ```python
 """Phase 2: merges between contiguous centralities (A1, "Fase 2")."""
@@ -1051,13 +1051,13 @@ git add -A && git commit -m "feat: phase 2 merges on declared level pairs"
 ### Task 6: Phase 3
 
 **Files:**
-- Create: `src/maps_sll/phase3.py`, `tests/test_phase3.py`
+- Create: `src/maps_slo/phase3.py`, `tests/test_phase3.py`
 
 - [ ] **Step 1: Write the failing tests `tests/test_phase3.py`**
 
 ```python
 from builders import problem, scenario
-from maps_sll.phase3 import phase3
+from maps_slo.phase3 import phase3
 
 
 def attracted_by(p, r, uid):
@@ -1145,7 +1145,7 @@ def test_R6_unit_without_times_is_unassigned():
 Run: `.venv/bin/pytest tests/test_phase3.py`
 Expected: FAIL, `ModuleNotFoundError`
 
-- [ ] **Step 3: Write `src/maps_sll/phase3.py`**
+- [ ] **Step 3: Write `src/maps_slo/phase3.py`**
 
 ```python
 """Phase 3: assignment of non-centralities (A1, "Fase 3", decisions D21, D22, D1, D2)."""
@@ -1212,10 +1212,10 @@ git add -A && git commit -m "feat: phase 3 assignment with tie-break chain and d
 Phase 4 needs the frozen state at the end of phase 3, so its tests run through `engine.run`. Both modules land in this task.
 
 **Files:**
-- Create: `src/maps_sll/phase4.py`, `src/maps_sll/engine.py`, `tests/test_phase4.py`
+- Create: `src/maps_slo/phase4.py`, `src/maps_slo/engine.py`, `tests/test_phase4.py`
 - Modify: `tests/builders.py` (uncomment `run_case`, `step`, `system_of` and the engine import)
 
-- [ ] **Step 1: Uncomment in `tests/builders.py` the line `from maps_sll.engine import run` and the functions `run_case`, `step`, `system_of`**
+- [ ] **Step 1: Uncomment in `tests/builders.py` the line `from maps_slo.engine import run` and the functions `run_case`, `step`, `system_of`**
 
 - [ ] **Step 2: Write the failing tests `tests/test_phase4.py`**
 
@@ -1352,9 +1352,9 @@ def test_I4_four_level_scheme():
 - [ ] **Step 3: Run to verify they fail**
 
 Run: `.venv/bin/pytest tests/test_phase4.py`
-Expected: FAIL, `ModuleNotFoundError: No module named 'maps_sll.engine'`
+Expected: FAIL, `ModuleNotFoundError: No module named 'maps_slo.engine'`
 
-- [ ] **Step 4: Write `src/maps_sll/phase4.py`**
+- [ ] **Step 4: Write `src/maps_slo/phase4.py`**
 
 ```python
 """Phase 4: single-unit systems (A1, "Fase 4", decisions D13, D23-D26; design 6.6)."""
@@ -1433,7 +1433,7 @@ def phase4(p: Problem, scenario: Scenario, ptr3: np.ndarray) -> Phase4Result:
     return result
 ```
 
-- [ ] **Step 5: Write `src/maps_sll/engine.py`**
+- [ ] **Step 5: Write `src/maps_slo/engine.py`**
 
 ```python
 """Execution of phases 2-4 and label resolution."""
@@ -1528,7 +1528,7 @@ git add -A && git commit -m "feat: phase 4 and engine"
 ### Task 8: Output tables and engine-level properties
 
 **Files:**
-- Create: `src/maps_sll/output.py` (tables only), `tests/test_engine.py`
+- Create: `src/maps_slo/output.py` (tables only), `tests/test_engine.py`
 
 - [ ] **Step 1: Write the failing tests `tests/test_engine.py`**
 
@@ -1538,9 +1538,9 @@ import pandas as pd
 import pytest
 
 from builders import make_inputs, run_case, scenario
-from maps_sll.engine import run
-from maps_sll.output import systems_table, units_table
-from maps_sll.problem import InputError
+from maps_slo.engine import run
+from maps_slo.output import systems_table, units_table
+from maps_slo.problem import InputError
 
 MILANO = (
     [("M", 1, 300000, "Milano"), ("S", 3, 80000, "Sesto San Giovanni"),
@@ -1695,9 +1695,9 @@ def test_I6_engine_does_not_assume_numeric_ids():
 - [ ] **Step 2: Run to verify they fail**
 
 Run: `.venv/bin/pytest tests/test_engine.py`
-Expected: FAIL, `ModuleNotFoundError: No module named 'maps_sll.output'`
+Expected: FAIL, `ModuleNotFoundError: No module named 'maps_slo.output'`
 
-- [ ] **Step 3: Write `src/maps_sll/output.py` (tables part)**
+- [ ] **Step 3: Write `src/maps_slo/output.py` (tables part)**
 
 ```python
 """Output tables (A1, "Output")."""
@@ -1808,8 +1808,8 @@ git add -A && git commit -m "feat: units and systems tables; engine-level criter
 ### Task 9: Metrics, manifest, writing the outputs, CLI
 
 **Files:**
-- Create: `src/maps_sll/metrics.py`, `src/maps_sll/manifest.py`, `src/maps_sll/cli.py`, `tests/test_outputs.py`
-- Modify: `src/maps_sll/output.py` (append `write_outputs`)
+- Create: `src/maps_slo/metrics.py`, `src/maps_slo/manifest.py`, `src/maps_slo/cli.py`, `tests/test_outputs.py`
+- Modify: `src/maps_slo/output.py` (append `write_outputs`)
 
 - [ ] **Step 1: Write the failing tests `tests/test_outputs.py`**
 
@@ -1819,10 +1819,10 @@ import json
 import yaml
 
 from builders import make_inputs, run_case, scenario
-from maps_sll.cli import main
-from maps_sll.engine import run
-from maps_sll.metrics import compute_metrics
-from maps_sll.output import systems_table, units_table, write_outputs
+from maps_slo.cli import main
+from maps_slo.engine import run
+from maps_slo.metrics import compute_metrics
+from maps_slo.output import systems_table, units_table, write_outputs
 
 CASE = (
     [("M", 1, 300000), ("u1", None, 1000), ("u2", None, 2000), ("far", None, 500)],
@@ -1910,9 +1910,9 @@ def test_cli_run(tmp_path):
 - [ ] **Step 2: Run to verify they fail**
 
 Run: `.venv/bin/pytest tests/test_outputs.py`
-Expected: FAIL, `ModuleNotFoundError: No module named 'maps_sll.metrics'`
+Expected: FAIL, `ModuleNotFoundError: No module named 'maps_slo.metrics'`
 
-- [ ] **Step 3: Write `src/maps_sll/metrics.py`**
+- [ ] **Step 3: Write `src/maps_slo/metrics.py`**
 
 ```python
 """Structural metrics V2-V5, V9, V10 (D3.2.1, "Misure strutturali")."""
@@ -2012,7 +2012,7 @@ def _non_contiguous(r: Result, units: pd.DataFrame) -> dict:
     return {"n_non_contiguous_systems": len(cases), "cases": cases}
 ```
 
-- [ ] **Step 4: Write `src/maps_sll/manifest.py`**
+- [ ] **Step 4: Write `src/maps_slo/manifest.py`**
 
 ```python
 """Run manifest (A1, "Manifesto dell'esecuzione"; criteria R5, A10, O5, O6, P2)."""
@@ -2042,7 +2042,7 @@ def build_manifest(r: Result, *, started_at: str, extra: dict | None = None) -> 
     sc, p = r.scenario, r.problem
     fingerprints = r.inputs.fingerprints()
     manifest = {
-        "package": "maps-sll",
+        "package": "maps-slo",
         "package_version": __version__,
         "git_commit": _git_commit(),
         "scenario": sc.model_dump(mode="json"),
@@ -2076,7 +2076,7 @@ def build_manifest(r: Result, *, started_at: str, extra: dict | None = None) -> 
     return manifest
 ```
 
-- [ ] **Step 5: Append `write_outputs` to `src/maps_sll/output.py`**
+- [ ] **Step 5: Append `write_outputs` to `src/maps_slo/output.py`**
 
 ```python
 import json
@@ -2120,10 +2120,10 @@ def write_outputs(r: Result, out_dir, *, started_at: str, extra: dict | None = N
 
 Move the new imports (`json`, `Path`, `perf_counter`, `yaml`) to the top of the module with the others.
 
-- [ ] **Step 6: Write `src/maps_sll/cli.py`**
+- [ ] **Step 6: Write `src/maps_slo/cli.py`**
 
 ```python
-"""Command line: maps-sll run | levels."""
+"""Command line: maps-slo run | levels."""
 
 from __future__ import annotations
 
@@ -2140,7 +2140,7 @@ from .scenario import load_scenario
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(prog="maps-sll")
+    ap = argparse.ArgumentParser(prog="maps-slo")
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="run phases 2-4 on a scenario")
     r.add_argument("scenario")
@@ -2202,7 +2202,7 @@ git add -A && git commit -m "feat: metrics, manifest, output writing and CLI"
 ### Task 10: Level calculation (phase 1)
 
 **Files:**
-- Create: `src/maps_sll/levels.py`, `maps/levels/maps-rules.yaml`, `tests/test_levels.py`
+- Create: `src/maps_slo/levels.py`, `maps/levels/maps-rules.yaml`, `tests/test_levels.py`
 
 - [ ] **Step 1: Write `maps/levels/maps-rules.yaml`**
 
@@ -2249,9 +2249,9 @@ import pandas as pd
 import pytest
 
 from builders import make_inputs, scenario
-from maps_sll.engine import run
-from maps_sll.levels import LevelsError, Rule, RuleSet, assign_levels, load_rules
-from maps_sll.output import units_table
+from maps_slo.engine import run
+from maps_slo.levels import LevelsError, Rule, RuleSet, assign_levels, load_rules
+from maps_slo.output import units_table
 
 RULES = load_rules(Path(__file__).parents[1] / "maps" / "levels" / "maps-rules.yaml")
 NONE = {"n_health": 0, "n_dea": 0, "n_secondary_schools": 0, "station_category": None}
@@ -2354,7 +2354,7 @@ def test_rule_needs_exactly_one_form():
 
 
 def test_R5_levels_run_writes_its_own_manifest(tmp_path):
-    from maps_sll.levels import assign_levels_file
+    from maps_slo.levels import assign_levels_file
     import json
     attrs = tmp_path / "attrs.csv"
     pd.DataFrame([{"id": "a", "population": 300000, **NONE},
@@ -2373,9 +2373,9 @@ def test_R5_levels_run_writes_its_own_manifest(tmp_path):
 - [ ] **Step 3: Run to verify they fail**
 
 Run: `.venv/bin/pytest tests/test_levels.py`
-Expected: FAIL, `ModuleNotFoundError: No module named 'maps_sll.levels'`
+Expected: FAIL, `ModuleNotFoundError: No module named 'maps_slo.levels'`
 
-- [ ] **Step 4: Write `src/maps_sll/levels.py`**
+- [ ] **Step 4: Write `src/maps_slo/levels.py`**
 
 ```python
 """Phase 1: level calculation from unit attributes, rules as data (criteria C1-C6)."""
@@ -2508,7 +2508,7 @@ def assign_levels_file(rules_path, attributes_path, out_path) -> pd.DataFrame:
     else:
         result.to_csv(out, index=False)
     manifest = {
-        "package": "maps-sll",
+        "package": "maps-slo",
         "package_version": __version__,
         "step": "levels",
         "rules": {"path": str(rules_file), "fingerprint": "sha256:" + _sha256(rules_file),
@@ -2890,7 +2890,7 @@ Not part of the installable package. Run once, in order:
 3. `maps/prepare/build_units.py` — units = population + GSSI levels
 4. `maps/prepare/fusions_draft.py`, then complete `maps/reference/fusions-2021-2025.csv` by hand
 5. `maps/prepare/reconduct.py` — 2021 matrix → 2025 codes (decision D10)
-6. `maps-sll run maps/scenarios/maps-2025.yaml --out output/maps-2025 --manifest-extra maps/data/reconduction.json`
+6. `maps-slo run maps/scenarios/maps-2025.yaml --out output/maps-2025 --manifest-extra maps/data/reconduction.json`
 7. `python maps/checks.py output/maps-2025 maps/data/units-2025.parquet`
 
 `maps/data/` is not versioned. The GSSI data (Stata routine and input files of 16/10/2026) are provided by GSSI and are not redistributed here.
@@ -2958,7 +2958,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from maps_sll.levels import assign_levels, load_rules
+from maps_slo.levels import assign_levels, load_rules
 
 
 def main() -> None:
@@ -3083,10 +3083,10 @@ O3 is recomputed independently here: the weight of every system against the sum 
 - [ ] **Step 2: National run, twice (R1), and a variant at 30 minutes (S6, P3)**
 
 ```bash
-.venv/bin/maps-sll run maps/scenarios/maps-2025.yaml --out output/maps-2025 --manifest-extra maps/data/reconduction.json
-.venv/bin/maps-sll run maps/scenarios/maps-2025.yaml --out output/maps-2025-bis --manifest-extra maps/data/reconduction.json
+.venv/bin/maps-slo run maps/scenarios/maps-2025.yaml --out output/maps-2025 --manifest-extra maps/data/reconduction.json
+.venv/bin/maps-slo run maps/scenarios/maps-2025.yaml --out output/maps-2025-bis --manifest-extra maps/data/reconduction.json
 sed 's/^distant_minutes: 60/distant_minutes: 30/; s/^name: maps-2025/name: maps-2025-d30/' maps/scenarios/maps-2025.yaml > maps/scenarios/maps-2025-d30.yaml
-.venv/bin/maps-sll run maps/scenarios/maps-2025-d30.yaml --out output/maps-2025-d30 --manifest-extra maps/data/reconduction.json
+.venv/bin/maps-slo run maps/scenarios/maps-2025-d30.yaml --out output/maps-2025-d30 --manifest-extra maps/data/reconduction.json
 .venv/bin/python -I maps/checks.py output/maps-2025 maps/data/units-2025.parquet --reference-run output/maps-2025-bis
 ```
 

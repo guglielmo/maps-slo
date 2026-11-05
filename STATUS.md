@@ -2,9 +2,9 @@
 
 Outline of the open work, one line per point. Last update: 2026-11-05.
 
-## maps-sll v0 — SLO algorithm library (MAPS deliverable D3.5), verified by the D3.2.1
+## maps-slo v0 — SLO algorithm library (MAPS deliverable D3.5), verified by the D3.2.1
 
-Design: `journal/2026-11-04-design-maps-sll.md`. Plan: `journal/2026-11-05-piano-maps-sll.md` (14 tasks, all done).
+Design: `journal/2026-11-04-design-maps-slo.md`. Plan: `journal/2026-11-05-piano-maps-slo.md` (14 tasks, all done).
 
 Done:
 - engine (phases 2–4), levels algorithm (phase 1), MAPS preparation, national run, traceability table; 156 tests

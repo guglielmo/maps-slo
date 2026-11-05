@@ -3,10 +3,10 @@ import json
 import yaml
 from builders import make_inputs, run_case, scenario
 
-from maps_sll.cli import main
-from maps_sll.engine import run
-from maps_sll.metrics import compute_metrics
-from maps_sll.output import systems_table, units_table, write_outputs
+from maps_slo.cli import main
+from maps_slo.engine import run
+from maps_slo.metrics import compute_metrics
+from maps_slo.output import systems_table, units_table, write_outputs
 
 CASE = (
     [("M", 1, 300000), ("u1", None, 1000), ("u2", None, 2000), ("far", None, 500)],

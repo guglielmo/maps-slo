@@ -19,7 +19,7 @@ def _git_commit() -> str:
             capture_output=True, text=True, check=True,
         ).stdout.strip()
         pyproject = Path(top) / "pyproject.toml"
-        if not (pyproject.is_file() and 'name = "maps-sll"' in pyproject.read_text()):
+        if not (pyproject.is_file() and 'name = "maps-slo"' in pyproject.read_text()):
             return "unknown"  # an installed copy inside some other repository
         out = subprocess.run(
             ["git", "rev-parse", "HEAD"], cwd=Path(__file__).parent,
@@ -39,7 +39,7 @@ def build_manifest(r: Result, *, started_at: str, extra: dict | None = None) -> 
     sc, p = r.scenario, r.problem
     fingerprints = r.inputs.fingerprints()
     manifest = {
-        "package": "maps-sll",
+        "package": "maps-slo",
         "package_version": __version__,
         "git_commit": _git_commit(),
         "scenario": sc.model_dump(mode="json"),

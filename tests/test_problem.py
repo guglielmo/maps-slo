@@ -3,8 +3,8 @@ import pandas as pd
 import pytest
 from builders import make_inputs, problem, scenario
 
-from maps_sll.inputs import Inputs
-from maps_sll.problem import InputError, build_problem
+from maps_slo.inputs import Inputs
+from maps_slo.problem import InputError, build_problem
 
 
 def test_arrays_are_indexed_by_position():
@@ -182,7 +182,7 @@ def test_input_suffix_case_insensitive(tmp_path):
 
 
 def test_S3_close_times_are_not_merged_by_precision():
-    from maps_sll.phase3 import phase3
+    from maps_slo.phase3 import phase3
 
     p = problem([("a", 5, 8000), ("b", 4, 20000), ("u", None, 1)],
                 times={("u", "a"): 10.0, ("u", "b"): 10.0000001})

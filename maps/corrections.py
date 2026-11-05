@@ -154,7 +154,7 @@ def read_corrections(path: Path) -> pd.DataFrame:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("run", type=Path, help="output directory of `maps-sll run`")
+    ap.add_argument("run", type=Path, help="output directory of `maps-slo run`")
     ap.add_argument("corrections", type=Path)
     ap.add_argument("units_input", type=Path, help="units file of the run (for the weights)")
     ap.add_argument("--out", type=Path, required=True)

@@ -187,7 +187,7 @@ def assign_levels_file(rules_path, attributes_path, out_path) -> pd.DataFrame:
     else:
         result.to_csv(out, index=False)
     manifest = {
-        "package": "maps-sll",
+        "package": "maps-slo",
         "package_version": __version__,
         "git_commit": _git_commit(),
         "step": "levels",

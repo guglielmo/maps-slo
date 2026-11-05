@@ -13,7 +13,7 @@ Writes in <run>/geo/:
 - with `--times`: `minutes_to_centre` per municipality (0 for the main centre), and per
   system the maximum and the mean (population-weighted with `--units-input`).
 
-Geometry stays out of the maps_sll package: this is a MAPS presentation step.
+Geometry stays out of the maps_slo package: this is a MAPS presentation step.
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ def greedy_colors(con: duckdb.DuckDBPyConnection) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("run", type=Path, help="output directory of `maps-sll run`")
+    ap.add_argument("run", type=Path, help="output directory of `maps-slo run`")
     ap.add_argument("boundaries", type=Path, help="ISTAT municipalities shapefile (EPSG:32632)")
     ap.add_argument("--out", type=Path, help="default: <run>/geo")
     ap.add_argument("--times", type=Path,

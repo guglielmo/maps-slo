@@ -1,5 +1,5 @@
 [project]
-name = "maps-sll"
+name = "maps-slo"
 version = "0.1.0"
 description = "Homogeneous local systems (SLO): partition of territorial units around centralities"
 readme = "README.md"
@@ -18,14 +18,14 @@ dev = ["pytest>=8", "ruff>=0.6"]
 maps = ["duckdb>=1.1"]
 
 [project.scripts]
-maps-sll = "maps_sll.cli:main"
+maps-slo = "maps_slo.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/maps_sll"]
+packages = ["src/maps_slo"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

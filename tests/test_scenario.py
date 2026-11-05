@@ -1,7 +1,7 @@
 import pytest
 from builders import MAPS, scenario
 
-from maps_sll.scenario import load_scenario
+from maps_slo.scenario import load_scenario
 
 
 def test_maps_scenario_is_valid():

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from maps_sll.levels import assign_levels, load_rules
+from maps_slo.levels import assign_levels, load_rules
 
 
 def main() -> None:

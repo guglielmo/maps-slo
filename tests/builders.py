@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pandas as pd
 
-from maps_sll.engine import run
-from maps_sll.inputs import Inputs
-from maps_sll.problem import Problem, build_problem
-from maps_sll.scenario import Scenario
+from maps_slo.engine import run
+from maps_slo.inputs import Inputs
+from maps_slo.problem import Problem, build_problem
+from maps_slo.scenario import Scenario
 
 MAPS = {
     "name": "test-maps",

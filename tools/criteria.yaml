@@ -3,7 +3,7 @@
 # inspection (reading code or outputs; `verified: <date>` once done), external (depends on
 # something outside the repository).
 R1: {evidence: [tests, national]}
-R2: {evidence: [inspection], verified: 2026-11-05, note: "src/maps_sll/cli.py: every parameter and input path comes from the scenario file; --manifest-extra is only copied into the manifest"}
+R2: {evidence: [inspection], verified: 2026-11-05, note: "src/maps_slo/cli.py: every parameter and input path comes from the scenario file; --manifest-extra is only copied into the manifest"}
 R3: {evidence: [external], note: "run on a second machine"}
 R4: {evidence: [tests]}
 R5: {evidence: [tests]}

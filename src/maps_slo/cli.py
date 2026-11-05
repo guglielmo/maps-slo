@@ -1,4 +1,4 @@
-"""Command line: maps-sll run | levels."""
+"""Command line: maps-slo run | levels."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from .scenario import load_scenario
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(prog="maps-sll")
+    ap = argparse.ArgumentParser(prog="maps-slo")
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="run phases 2-4 on a scenario")
     r.add_argument("scenario")

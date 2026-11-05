@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 from builders import run_case
 
-from maps_sll.output import systems_table, units_table
+from maps_slo.output import systems_table, units_table
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "maps"))
 from corrections import CorrectionError, apply_corrections

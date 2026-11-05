@@ -1,4 +1,4 @@
-# Design — maps-sll, the SLO algorithm library
+# Design — maps-slo, the SLO algorithm library
 
 Date of the decision: 4 November 2026. Agreed by Depp (consultant on the MAPS
 project) after the MAPS meeting of the same day, in which GSSI confirmed that the code
@@ -18,7 +18,7 @@ Three contract items meet in this repository:
 |---|---|---|
 | task 3.2 | the code of the SLO modules, with unit tests | development |
 | D3.2.1 | technical verification and validation of the SLO modules | consultant |
-| D3.5 | public repository of the "maps-sll" library, MIT licence, due 31/12/2026 | consultant |
+| D3.5 | public repository of the "maps-slo" library, MIT licence, due 31/12/2026 | consultant |
 
 The only code GSSI produced is the Stata routine of 16/10 (not redistributed here),
 which predates
@@ -48,10 +48,10 @@ determinism are fixed here (section 6.6) and must be communicated to GSSI.
 
 One repository, three parts with separate boundaries:
 
-1. **the engine** (`src/maps_sll/`): phases 2, 3 and 4, scenario, label resolution,
+1. **the engine** (`src/maps_slo/`): phases 2, 3 and 4, scenario, label resolution,
    outputs, manifest, structural metrics. Generic: no ISTAT code, no fixed number of
    levels, no fixed number of units (criteria I1–I7);
-2. **the level calculation** (`src/maps_sll/levels.py`): phase 1, a rule engine whose
+2. **the level calculation** (`src/maps_slo/levels.py`): phase 1, a rule engine whose
    rules are configuration data (criteria C1–C6). It reads a table of attributes per unit
    and knows nothing about where the table comes from;
 3. **the MAPS application** (`maps/`, outside the installable package): conversion of the
@@ -85,9 +85,9 @@ Parquet).
 ## 5. Repository layout
 
 ```
-maps-sll/
+maps-slo/
   pyproject.toml            # uv; Python 3.13; numpy, pandas, pyarrow, pyyaml, pydantic
-  src/maps_sll/
+  src/maps_slo/
     scenario.py             # YAML scenario → validated model (pydantic)
     inputs.py               # Units, Contiguity, TravelTimes; sha256 fingerprints
     levels.py               # phase 1: ordered rules, first match wins
@@ -98,7 +98,7 @@ maps-sll/
     engine.py               # run(scenario, inputs) -> Result; timings per phase
     output.py               # units table, systems table, distant units, manifest
     metrics.py              # V2–V5, V9, V10
-    cli.py                  # maps-sll levels|run|metrics
+    cli.py                  # maps-slo levels|run|metrics
   maps/                     # MAPS application, not packaged
     prepare/                # .dta → Parquet; 2021 → 2025 reconduction; population
     scenarios/maps-2025.yaml
@@ -347,7 +347,7 @@ reconducted matrix as a Parquet file reused by every scenario.
 
 ## 13. Publication
 
-Local development first, then `github.com/GranSassoTech/maps-sll`, MIT licence, after
+Local development first, then `github.com/GranSassoTech/maps-slo`, MIT licence, after
 the consultant's review. No data in the repository (`maps/data/` is gitignored): the
 licence of the ISTAT travel-time matrix built on the TomTom graph is still to be checked
 with ISTAT (open point of the specification), and until then the README says that the

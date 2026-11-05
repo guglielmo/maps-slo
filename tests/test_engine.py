@@ -3,9 +3,9 @@ import pandas as pd
 import pytest
 from builders import make_inputs, run_case, scenario
 
-from maps_sll.engine import run
-from maps_sll.output import systems_table, units_table
-from maps_sll.problem import InputError
+from maps_slo.engine import run
+from maps_slo.output import systems_table, units_table
+from maps_slo.problem import InputError
 
 MILANO = (
     [("M", 1, 300000, "Milano"), ("S", 3, 80000, "Sesto San Giovanni"),

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from maps_sll.labels import ChainError, resolve
+from maps_slo.labels import ChainError, resolve
 
 
 def test_A4_chain_resolves_to_the_root():

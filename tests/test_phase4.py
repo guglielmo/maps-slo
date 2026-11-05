@@ -142,7 +142,7 @@ def test_A12_mutual_choice_different_weight():
 
 
 def _r4_case(reverse):
-    from maps_sll.inputs import Inputs
+    from maps_slo.inputs import Inputs
 
     units = [("t", 6, 30000), ("j", 6, 20000), ("k", 5, 10000), ("j2", 6, 25000), ("u", None, 1)]
     contig = [("t", "j"), ("j", "k"), ("j2", "k")]
@@ -154,13 +154,13 @@ def _r4_case(reverse):
     from builders import make_inputs
 
     inp: Inputs = make_inputs(units, contig, times)
-    from maps_sll.engine import run
+    from maps_slo.engine import run
 
     return run(scenario(), inp)
 
 
 def test_R4_phase4_rules_do_not_depend_on_record_order():
-    from maps_sll.output import units_table
+    from maps_slo.output import units_table
 
     a, b = _r4_case(False), _r4_case(True)
     ua = units_table(a).sort_values("id").reset_index(drop=True)
@@ -197,7 +197,7 @@ def test_claimed_centrality_minutes_use_claimant_to_claimed_time():
     import numpy as np
     from builders import make_inputs
 
-    from maps_sll.engine import run
+    from maps_slo.engine import run
 
     inp = make_inputs([("s", 6, 20000), ("h", 4, 15000), ("u", None, 1000)], [("s", "h")],
                       {("s", "h"): 10, ("u", "h"): 5, ("u", "s"): 30})
@@ -217,7 +217,7 @@ def test_chain_of_single_unit_systems():
 
 
 def test_claimed_centrality_with_merged_centre_moves_whole_system():
-    from maps_sll.output import systems_table, units_table
+    from maps_slo.output import systems_table, units_table
 
     # j (level 3) heads a system with k (level 5, merged into j in phase 2) and attracted v
     r = run_case(

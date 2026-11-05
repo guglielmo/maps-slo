@@ -5,9 +5,9 @@ import pandas as pd
 import pytest
 from builders import make_inputs, scenario
 
-from maps_sll.engine import run
-from maps_sll.levels import LevelsError, Rule, RuleSet, assign_levels, load_rules
-from maps_sll.output import units_table
+from maps_slo.engine import run
+from maps_slo.levels import LevelsError, Rule, RuleSet, assign_levels, load_rules
+from maps_slo.output import units_table
 
 RULES = load_rules(Path(__file__).parents[1] / "maps" / "levels" / "maps-rules.yaml")
 NONE = {"n_health": 0, "n_dea": 0, "n_secondary_schools": 0, "station_category": None}
@@ -112,7 +112,7 @@ def test_rule_needs_exactly_one_form():
 def test_R5_levels_run_writes_its_own_manifest(tmp_path):
     import json
 
-    from maps_sll.levels import assign_levels_file
+    from maps_slo.levels import assign_levels_file
     attrs = tmp_path / "attrs.csv"
     pd.DataFrame([{"id": "a", "population": 300000, **NONE},
                   {"id": "b", "population": 10, **NONE}]).to_csv(attrs, index=False)
@@ -186,7 +186,7 @@ def test_I1_phase1_rejects_duplicate_and_missing_ids():
 
 
 def test_I1_phase1_csv_keeps_na_like_ids(tmp_path):
-    from maps_sll.levels import assign_levels_file
+    from maps_slo.levels import assign_levels_file
     src = tmp_path / "attrs.csv"
     src.write_text("id,population,n_health,n_dea,n_secondary_schools,station_category\n"
                    "NA,300000,0,0,0,\nNone,10,NA,0,1,bronze\n", encoding="utf-8")

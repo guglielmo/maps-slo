@@ -1,6 +1,6 @@
 from builders import MAPS, problem, scenario
 
-from maps_sll.phase2 import phase2
+from maps_slo.phase2 import phase2
 
 
 def merged_to(p, ptr, uid):

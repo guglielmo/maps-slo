@@ -1,7 +1,7 @@
 import pytest
 from builders import problem, scenario
 
-from maps_sll.phase3 import phase3
+from maps_slo.phase3 import phase3
 
 
 def attracted_by(p, r, uid):
