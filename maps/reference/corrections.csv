@@ -1,0 +1,9 @@
+id,kind,unit_id,unit_name,target_id,target_name,reason
+C01,join,058120,Fiumicino,058091,Roma,"livello 1: il sistema di Fiumicino si unisce a Roma (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
+C02,join,045003,Carrara,045010,Massa,"livello 2: il sistema di Carrara si unisce a Massa (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
+C03,join,073021,Palagiano,073003,Castellaneta,"livello 5: il sistema di Palagiano si unisce a Castellaneta, che ne diventa il centro (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
+C04,join,088008,Pozzallo,088006,Modica,"livello 5: il sistema di Pozzallo si unisce a Modica (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
+C05,join,087016,Fiumefreddo di Sicilia,087017,Giarre,"livello 6: il sistema di Fiumefreddo di Sicilia si unisce a Giarre (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
+C06,join,047024,San Marcello Piteglio,047014,Pistoia,"livello 6: il sistema di San Marcello Piteglio si unisce a Pistoia (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
+C07,join,088010,Santa Croce Camerina,088009,Ragusa,"livello 6: il sistema di Santa Croce Camerina si unisce a Ragusa (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
+C08,assign,081025,Misiliscemi,081021,Trapani,"nato nel 2021 per scissione da Trapani, senza tempi nella matrice 2021: assegnato al sistema di Trapani (specifica A1, decisione D18)"

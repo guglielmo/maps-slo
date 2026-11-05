@@ -14,7 +14,10 @@ Not part of the installable package. Run once, in order:
    --reference-run output/maps-2025-bis --variant-run output/maps-2025-d30`
 8. phase 1 against GSSI: `python maps/levels_gssi.py maps/data/levels-gssi.parquet
    maps/levels/maps-rules.yaml output/levels-gssi`
-9. GeoJSON for mapshaper.org or a GIS: download the ISTAT boundaries of 1 January 2025
+9. downstream corrections (decision D18): `python maps/corrections.py output/maps-2025
+   maps/reference/corrections.csv maps/data/units-2025.parquet --out output/maps-2025-corrected`
+   (the list names municipalities, so it applies to any run; outcome in `corrections.json`)
+10. GeoJSON for mapshaper.org or a GIS: download the ISTAT boundaries of 1 January 2025
    (generalised, `Limiti01012025_g.zip`) into `maps/data/istat-limiti-2025/`, then
    `python maps/geo_export.py output/maps-2025 maps/data/istat-limiti-2025/Com01012025_g/Com01012025_g_WGS84.shp`
    → `output/maps-2025/geo/comuni.geojson` and `sistemi.geojson`
