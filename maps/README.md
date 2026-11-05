@@ -25,5 +25,11 @@ Not part of the installable package. Run once, in order:
 11. calibration grid (D3.3.2 method draft): `python maps/calibrate.py maps/calibration/grid-2025.yaml
     --out output/calibration-2025` → one row per combination of the grid with the measures
     of the draft, plus the system of every unit for every combination (`roots.npz`)
+12. levels by phase 1 (decision D16) on the GSSI services file of 5/11/2026:
+    `python maps/prepare/services_gssi.py maps/data/file_prova_algoritmo_modulo_1.xlsx
+    maps/data/services-2025.csv` (`--health hospital` for hospitals only), then
+    `maps-slo levels maps/levels/maps-rules.yaml maps/data/services-2025.csv --out output/levels-d16/levels.parquet`,
+    `python maps/prepare/build_units.py maps/data/population-2025.csv output/levels-d16/levels.parquet
+    maps/data/units-2025-d16.parquet` and `maps-slo run maps/scenarios/maps-2025-d16.yaml --out output/maps-2025-d16`
 
 `maps/data/` is not versioned. The GSSI data (Stata routine and input files of 16/10/2026) are provided by GSSI and are not redistributed here.
