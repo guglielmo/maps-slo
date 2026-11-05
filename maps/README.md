@@ -19,7 +19,8 @@ Not part of the installable package. Run once, in order:
    (the list names municipalities, so it applies to any run; outcome in `corrections.json`)
 10. GeoJSON for mapshaper.org or a GIS: download the ISTAT boundaries of 1 January 2025
    (generalised, `Limiti01012025_g.zip`) into `maps/data/istat-limiti-2025/`, then
-   `python maps/geo_export.py output/maps-2025 maps/data/istat-limiti-2025/Com01012025_g/Com01012025_g_WGS84.shp`
-   → `output/maps-2025/geo/comuni.geojson` and `sistemi.geojson`
+   `python maps/geo_export.py output/maps-2025-corrected maps/data/istat-limiti-2025/Com01012025_g/Com01012025_g_WGS84.shp
+   --times maps/data/times-2025.parquet --units-input maps/data/units-2025.parquet`
+   → `output/maps-2025-corrected/geo/comuni.geojson` and `sistemi.geojson`
 
 `maps/data/` is not versioned. The GSSI data (Stata routine and input files of 16/10/2026) are provided by GSSI and are not redistributed here.

@@ -9,7 +9,9 @@ Boundaries: ISTAT, "Limiti amministrativi" of 1 January 2025, generalised versio
 Writes in <run>/geo/:
 - comuni.geojson — one feature per municipality, with its row of the units table;
 - sistemi.geojson — one feature per system, the union of its municipalities;
-- both with `color`, a small integer such that two adjacent systems never share it.
+- both with `color`, a small integer such that two adjacent systems never share it;
+- with `--times`: `minutes_to_centre` per municipality (0 for the main centre), and per
+  system the maximum and the mean (population-weighted with `--units-input`).
 
 Geometry stays out of the maps_sll package: this is a MAPS presentation step.
 """
@@ -50,6 +52,10 @@ def main() -> None:
     ap.add_argument("run", type=Path, help="output directory of `maps-sll run`")
     ap.add_argument("boundaries", type=Path, help="ISTAT municipalities shapefile (EPSG:32632)")
     ap.add_argument("--out", type=Path, help="default: <run>/geo")
+    ap.add_argument("--times", type=Path,
+                    help="travel-time matrix of the run: adds the minutes to the main centre")
+    ap.add_argument("--units-input", type=Path,
+                    help="units file of the run (weights): adds the weighted mean per system")
     a = ap.parse_args()
     out = a.out or a.run / "geo"
     out.mkdir(parents=True, exist_ok=True)
@@ -92,6 +98,37 @@ def main() -> None:
            LEFT JOIN units d ON d.id = u.direct_step_id
            WHERE u.id IS NOT NULL OR n.id IS NOT NULL"""
     )
+    if a.times:
+        # direction of the run: origin = the unit, destination = the centrality
+        con.execute(
+            f"""ALTER TABLE com ADD COLUMN minutes_to_centre DOUBLE;
+                UPDATE com SET minutes_to_centre = CASE WHEN com.id = com.system_id THEN 0
+                                                        ELSE t.minutes END
+                FROM (SELECT lpad(CAST(origin AS VARCHAR), 6, '0') AS o,
+                             lpad(CAST(destination AS VARCHAR), 6, '0') AS d, minutes
+                      FROM read_parquet('{a.times}')) t
+                WHERE t.o = com.id AND t.d = com.system_id"""
+        )
+        con.execute("UPDATE com SET minutes_to_centre = 0 WHERE id = system_id")
+        weight = "1.0"
+        if a.units_input:
+            con.execute(f"CREATE TABLE w AS SELECT id, weight FROM read_parquet('{a.units_input}')")
+            weight = "(SELECT weight FROM w WHERE w.id = com.id)"
+        con.execute(
+            f"""CREATE TABLE sys_minutes AS SELECT system_id,
+                       max(minutes_to_centre) AS max_minutes_to_centre,
+                       round(sum({weight} * minutes_to_centre) / sum({weight}), 1)
+                           AS mean_minutes_to_centre
+                FROM com WHERE system_id IS NOT NULL AND minutes_to_centre IS NOT NULL
+                GROUP BY 1"""
+        )
+        (n_missing,) = con.execute(
+            "SELECT count(*) FROM com WHERE system_id IS NOT NULL AND minutes_to_centre IS NULL"
+        ).fetchall()[0]
+        if n_missing:
+            print(f"warning: {n_missing} assigned municipalities without a time to their centre")
+    else:
+        con.execute("CREATE TABLE sys_minutes AS SELECT system_id FROM sys")
     greedy_colors(con)
 
     opts = f"(FORMAT GDAL, DRIVER 'GeoJSON', LAYER_CREATION_OPTIONS ('RFC7946=YES', 'COORDINATE_PRECISION={PRECISION}'))"
@@ -102,7 +139,8 @@ def main() -> None:
     )
     sistemi = out / "sistemi.geojson"
     con.execute(
-        f"""COPY (SELECT s.*, k.color, g.geom FROM sys s
+        f"""COPY (SELECT s.*, m.* EXCLUDE (system_id), k.color, g.geom FROM sys s
+                  LEFT JOIN sys_minutes m USING (system_id)
                   JOIN (SELECT system_id, ST_Union_Agg(geom) AS geom FROM com
                         WHERE system_id IS NOT NULL GROUP BY 1) g USING (system_id)
                   JOIN colors k USING (system_id) ORDER BY s.system_id) TO '{sistemi}' {opts}"""
