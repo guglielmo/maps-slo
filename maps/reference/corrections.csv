@@ -7,3 +7,4 @@ C05,join,087016,Fiumefreddo di Sicilia,087017,Giarre,"livello 6: il sistema di F
 C06,join,047024,San Marcello Piteglio,047014,Pistoia,"livello 6: il sistema di San Marcello Piteglio si unisce a Pistoia (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
 C07,join,088010,Santa Croce Camerina,088009,Ragusa,"livello 6: il sistema di Santa Croce Camerina si unisce a Ragusa (routine GSSI del 16/10/2026, aggiustamenti ex-post)"
 C08,assign,081025,Misiliscemi,081021,Trapani,"nato nel 2021 per scissione da Trapani, senza tempi nella matrice 2021: assegnato al sistema di Trapani (specifica A1, decisione D18)"
+C09,alone,071026,Isole Tremiti,071026,Isole Tremiti,"isole senza collegamento stradale e quindi senza tempi nella matrice: restano un sistema di un solo comune (decisione del 05/11/2026)"

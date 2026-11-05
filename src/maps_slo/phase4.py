@@ -21,7 +21,7 @@ class Phase4Result:
 
 
 def phase4(p: Problem, scenario: Scenario, ptr3: np.ndarray) -> Phase4Result:
-    """Determinism rules to communicate: a claim loser and a claimant whose claim is ignored
+    """Determinism rules (A1, "Trattamento simultaneo", fixed on 2026-11-05): a claim loser and a claimant whose claim is ignored
     stay alone even if they have other candidates (no second round); a claimed centrality
     that has its own join keeps it. `rules[c]` explains the direct step of c, with precedence
     own join (P4-JOIN, P4-D25) > being claimed (P4-CLAIMED) > own claim outcome (P4-CLAIM,

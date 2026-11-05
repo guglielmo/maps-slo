@@ -13,9 +13,10 @@ Done:
 Open points:
 - criteria not verifiable yet (`output/esito.md`): R3 (run on a second machine), O1 (schema of the MAPS table of the attractors, decision D9); R2 and P3 are satisfied by a dated code reading, not by a test
 - downstream unions (decision D18, confirmed 2026-11-05): Rome with Fiumicino and the six other unions of the GSSI routine (Carrara→Massa, Palagiano→Castellaneta, Pozzallo→Modica, Fiumefreddo→Giarre, San Marcello Piteglio→Pistoia, Santa Croce Camerina→Ragusa) are applied after every run, whatever systems come out: versioned list plus script on the algorithm output, keyed on the municipalities and not on the system ids, so that it applies to any calibration
+- Isole Tremiti (no road link, no travel times) stays a single-municipality system: correction C09 of kind `alone` (decision 2026-11-05)
 - phase 1 follows decision D16, not the GSSI Stata routine (which predates the specification): the differences on levels 4–6 (574/1,259 matching, levels 1–3 all matching) are expected. The national aggregation still uses the GSSI levels as input, so its levels 4–6 are not those of D16 until the services data are available
 - services data for all 2025 municipalities, needed by the levels algorithm (`centralità.dta` covers only the 1,259 centralities): source to agree with GSSI
-- determinism rule of design section 6.6 (single-unit system both choosing and claimed): to confirm with GSSI
+- determinism rule of design section 6.6 (single-unit system both choosing and claimed: its own choice prevails, the claimant stays alone): adopted 2026-11-05 and written into the specification (A1, "Trattamento simultaneo"); to communicate to GSSI, who may prefer a second round as in decision D26 (three national cases: Castel Volturno, Conversano, Castellaneta)
 - output files of the GSSI Stata run, for the reconciliation: not received yet
 - calibration of the aggregation parameters (share and time thresholds of phase 2, table of the level pairs that can merge; the distance threshold only flags units and does not change the assignment): parameters, ranges and objective measure to agree with GSSI
 - Baranzate (015250) is missing from the 2025 population source and is added by hand to the population file

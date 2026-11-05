@@ -92,7 +92,7 @@ def test_A12_case7_lighter_than_y_joins_y():
     assert step(r, "s") == "y" and system_of(r, "s") == "y"
 
 
-def test_determinism_own_choice_prevails_over_a_claim():
+def test_A12_case8_own_choice_prevails_over_a_claim():
     # c chooses d (heavier); s (heavier than c) claims c: the claim has no effect
     r = run_case(
         [("c", 6, 10000), ("d", 5, 20000), ("s", 6, 15000), ("u", None, 1)],

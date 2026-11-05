@@ -14,6 +14,8 @@ output. Two kinds:
   system it is `not_applicable` (moving it would drag another centre's system), reported
   and skipped, or an error with `--strict`.
 - `assign`: an unassigned unit (no travel times) joins the system that contains `target_id`.
+- `alone`: an unassigned unit forms a system of its own (`target_id` is the unit itself),
+  for a municipality that no road connects to the others, such as a small island.
 
 Corrections apply in file order, each on the state left by the previous ones. The output
 directory holds the four tables with a `correction` column (id of the correction that moved
@@ -72,6 +74,34 @@ def apply_corrections(units: pd.DataFrame, systems: pd.DataFrame, unassigned: pd
     for c in corrections.itertuples(index=False):
         rec = {"id": c.id, "kind": c.kind, "unit_id": c.unit_id, "unit_name": c.unit_name,
                "target_id": c.target_id, "target_name": c.target_name, "reason": c.reason}
+        if c.kind == "alone":
+            if c.target_id not in ("", c.unit_id):
+                raise CorrectionError(f"{c.id}: an `alone` correction targets the unit itself")
+            rec["to_system"] = c.unit_id
+            if c.unit_id in set(unassigned.id):
+                name = unassigned.loc[unassigned.id == c.unit_id, "name"].iloc[0]
+                new = {col: None for col in units.columns}
+                new.update(id=c.unit_id, name=name, system_id=c.unit_id, system_name=name,
+                           full_label=name, chain=name, role="main_centre", distant=False,
+                           correction=c.id)
+                units = pd.concat([units, pd.DataFrame([new])], ignore_index=True)
+                unassigned = unassigned[unassigned.id != c.unit_id]
+                srow = {col: 0 for col in systems.columns}
+                srow.update(system_id=c.unit_id, name=name, main_centre_id=c.unit_id,
+                            main_centre_level=None, n_units=1,
+                            total_weight=float(weights[c.unit_id]))
+                systems = pd.concat([systems, pd.DataFrame([srow])], ignore_index=True)
+                rec.update(status="applied", units_moved=1, from_system=None)
+            else:
+                row = units[units.id == c.unit_id]
+                if row.empty:
+                    raise CorrectionError(f"{c.id}: unit {c.unit_id} is in no table of the run")
+                alone = (row.iloc[0].system_id == c.unit_id
+                         and (units.system_id == c.unit_id).sum() == 1)
+                rec.update(status="already_satisfied" if alone else "not_applicable",
+                           units_moved=0, from_system=row.iloc[0].system_id)
+            outcomes.append(rec)
+            continue
         tgt = units[units.id == c.target_id]
         if tgt.empty:
             raise CorrectionError(f"{c.id}: target {c.target_id} is not an assigned unit")
@@ -132,13 +162,14 @@ def apply_corrections(units: pd.DataFrame, systems: pd.DataFrame, unassigned: pd
                 _refresh_system(units, systems, sy)
                 rec.update(status="applied", units_moved=1, from_system=None)
         else:
-            raise CorrectionError(f"{c.id}: unknown kind {c.kind!r} (join or assign)")
+            raise CorrectionError(f"{c.id}: unknown kind {c.kind!r} (join, assign or alone)")
         outcomes.append(rec)
     units = units.sort_values("id", kind="stable").reset_index(drop=True)
     for col in ("level", "phase"):
         units[col] = units[col].astype("Int64")
     units["distant"] = units["distant"].astype(bool)
-    systems = systems.reset_index(drop=True)
+    systems = systems.sort_values("system_id", kind="stable").reset_index(drop=True)
+    systems["main_centre_level"] = systems["main_centre_level"].astype("Int64")
     return units, systems, unassigned.reset_index(drop=True), outcomes
 
 

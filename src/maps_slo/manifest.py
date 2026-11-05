@@ -35,6 +35,25 @@ def _git_commit() -> str:
         return "unknown"
 
 
+def _environment() -> dict:
+    """Machine and software of the run (D3.2.1, "Riproducibilità della verifica")."""
+    import os
+    import platform
+
+    import numpy
+    import pandas
+
+    return {
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "machine": platform.machine(),
+        "processor": platform.processor() or None,
+        "cpu_count": os.cpu_count(),
+        "numpy": numpy.__version__,
+        "pandas": pandas.__version__,
+    }
+
+
 def build_manifest(r: Result, *, started_at: str, extra: dict | None = None) -> dict:
     sc, p = r.scenario, r.problem
     fingerprints = r.inputs.fingerprints()
@@ -67,6 +86,7 @@ def build_manifest(r: Result, *, started_at: str, extra: dict | None = None) -> 
             {"claimant": p.ids[a], "claimed": p.ids[b]} for a, b in r.phase4.ignored_claims
         ],
         "timings_seconds": dict(r.timings),
+        "environment": _environment(),
         "started_at": started_at,
         "finished_at": datetime.now(UTC).isoformat(timespec="seconds"),
     }

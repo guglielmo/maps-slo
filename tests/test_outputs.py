@@ -56,6 +56,8 @@ def test_R5_A10_O6_P2_manifest(tmp_path):
     assert m["thresholds_used"] == {"min_shared_share": 0.0309, "max_minutes": 20.0,
                                     "distant_minutes": 60.0}
     assert m["travel_times"]["description"] == "test matrix"
+    env = m["environment"]
+    assert env["python"] and env["platform"] and env["cpu_count"]
     assert {"phase2", "phase3", "phase4", "resolve", "core", "write_tables"} <= set(
         m["timings_seconds"])
 
@@ -112,3 +114,16 @@ def test_manifest_lists_unassigned_ids(tmp_path):
     m = json.loads((tmp_path / "manifest.json").read_text(encoding="utf-8"))
     assert m["counts"]["unassigned_ids"] == ["aa", "zz"]
     assert "metrics" in m["timings_seconds"]
+
+
+def test_A10_manifests_of_two_runs_with_different_centralities(tmp_path):
+    units, contig, times = CASE
+    other = [("M", 1, 300000), ("u1", 6, 1000), ("u2", None, 2000), ("far", None, 500)]
+    counts = []
+    for k, u in enumerate((units, other)):
+        write_outputs(run_case(u, contig, times), tmp_path / str(k),
+                      started_at="2026-11-05T10:00:00+00:00")
+        m = json.loads((tmp_path / str(k) / "manifest.json").read_text(encoding="utf-8"))
+        assert m["thresholds_used"]["min_shared_share"] == 0.0309
+        counts.append(m["counts"]["centralities"])
+    assert counts == [1, 2]

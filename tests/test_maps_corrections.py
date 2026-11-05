@@ -87,3 +87,19 @@ def test_target_must_be_a_centrality():
     u, s, n = tables()
     with pytest.raises(CorrectionError, match="not a centrality"):
         apply_corrections(u, s, n, corr(("C1", "join", "F", "F", "u1", "u1", "")), WEIGHTS)
+
+
+def test_alone_makes_an_unassigned_unit_a_system_of_its_own():
+    u, s, n = tables()
+    u2, s2, n2, out = apply_corrections(u, s, n, corr(("C1", "alone", "x", "x", "x", "x", "")),
+                                        WEIGHTS)
+    by = u2.set_index("id")
+    assert out[0]["status"] == "applied" and n2.empty
+    assert by.loc["x", ["system_id", "full_label", "role", "correction"]].tolist() \
+        == ["x", "x", "main_centre", "C1"]
+    row = s2.set_index("system_id").loc["x"]
+    assert row.n_units == 1 and row.total_weight == 7.0 and len(s2) == 4
+    _, _, _, again = apply_corrections(u2.drop(columns="correction"),
+                                       s2.drop(columns="merged_centres_corrections"), n2,
+                                       corr(("C1", "alone", "x", "x", "x", "x", "")), WEIGHTS)
+    assert again[0]["status"] == "already_satisfied"
