@@ -87,6 +87,9 @@ def measures(p: Problem, roots: np.ndarray, paths: list[list[int]], assigned: np
     a0 = float((w * to_step).sum() / w.sum())
     out = {
         "K1_access_cost": a - a0,
+        # convex version of K1: population-weighted mean of the squared extra minutes, so that
+        # one municipality 20 minutes further weighs more than ten 2 minutes further
+        "K1q_mean_squared_extra": float((w * (to_root - to_step) ** 2).sum() / w.sum()),
         "mean_minutes_to_centre": a,
         "mean_minutes_to_step": a0,
         "K2_mean_minutes_per_unit": float(to_root.mean()),

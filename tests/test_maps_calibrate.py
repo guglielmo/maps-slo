@@ -39,6 +39,8 @@ def test_access_cost_of_a_merge():
     total = 1550
     assert m["mean_minutes_to_centre"] == pytest.approx((400 * 18 + 100 * 5 + 50 * 22) / total)
     assert m["mean_minutes_to_step"] == pytest.approx((100 * 5 + 50 * 4) / total)
+    # extra minutes: S 18 (a centrality: own step 0), u2 22 - 4 = 18, u1 0
+    assert m["K1q_mean_squared_extra"] == pytest.approx((400 * 18**2 + 50 * 18**2) / total)
     assert m["V2_n_systems"] == 1 and m["K5_pop_share_service_centre"] == 1.0
     assert m["K3_pop_share_over_20"] == pytest.approx(50 / total)
     assert m["K6_small_systems"] == 0 and m["V5_non_contiguous_systems"] == 0
