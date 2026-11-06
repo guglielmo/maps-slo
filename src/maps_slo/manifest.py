@@ -36,7 +36,7 @@ def _git_commit() -> str:
 
 
 def _environment() -> dict:
-    """Machine and software of the run (D3.2.1, "Riproducibilità della verifica")."""
+    """Machine and software of the run (D3.2.1, "Reproducibility of the verification")."""
     import os
     import platform
 

@@ -1,4 +1,4 @@
-"""Recursive resolution of the attraction label (A1, "Che cosa significa «unita»")."""
+"""Recursive resolution of the attraction label (A1, "What «merged» means: the two labels")."""
 
 from __future__ import annotations
 

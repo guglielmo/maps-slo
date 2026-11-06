@@ -38,5 +38,13 @@ Not part of the installable package. Run once, in order:
     --units-input maps/data/units-2025-d16.parquet --services maps/data/services-2025.csv
     --out output/D3.4-SLO-2025-v1.0` (GeoPackage, GeoJSON, CSV, metadata, redistributable inputs;
     texts in `maps/reference/d34/`; the travel-time matrix is not included)
+14. calibration of version 1.0 (D3.3.2 method, cost function): `python maps/calibrate.py
+    maps/calibration/grid-2025-d16-cost.yaml --out output/calibration-2025-d16-cost`, then
+    `python maps/choose.py output/calibration-2025-d16-cost/calibration.parquet --fixed-border
+    --fixed-pairs` (only the time threshold varies; without the two flags all three parameters
+    vary). It prints the minimiser for every range of lambda and the choice at lambda*; the chosen
+    parameters go into a scenario (here `maps/scenarios/maps-2025-d16-cost-agreed.yaml`).
+    Optional: `python maps/assignment.py` adds the assignment error, usable as cost with
+    `choose.py --cost errq_all`
 
 `maps/data/` is not versioned. The GSSI data (Stata routine and input files of 16/10/2026) are provided by GSSI and are not redistributed here.

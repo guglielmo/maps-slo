@@ -4,14 +4,14 @@
         --version 1.0 --units-input maps/data/units-2025-d16.parquet \
         --services maps/data/services-2025.csv --out output/D3.4-SLO-2025-v1.0
 
-Layout of the package (the README in Italian, maps/reference/d34/LEGGIMI.md, describes it):
+Layout of the package (described by its README, maps/reference/d34/README.md):
 
 - sistemi.gpkg, comuni.gpkg — one polygon per system, one per municipality
 - sistemi.geojson, comuni.geojson — the same layers, for the web
 - sistemi.csv, comuni.csv — the same attributes without geometry
-- metadati/ — manifest, scenario, metrics of the algorithm, outcome of the corrections,
+- metadata/ — manifest, scenario, metrics of the algorithm, outcome of the corrections,
   description of the fields
-- ingresso/ — the inputs of the run that can be redistributed: units with population and
+- input/ — the inputs of the run that can be redistributed: units with population and
   levels, phase-1 attributes from the GSSI services file, corrections, fusions 2021-2025.
   The travel-time matrix (ISTAT on TomTom graph) is NOT included.
 - SHA256SUMS — checksums of every file of the package
@@ -53,8 +53,8 @@ def main() -> None:
     out = a.out
     if out.exists():
         shutil.rmtree(out)
-    (out / "metadati").mkdir(parents=True)
-    (out / "ingresso").mkdir()
+    (out / "metadata").mkdir(parents=True)
+    (out / "input").mkdir()
 
     con = duckdb.connect()
     con.install_extension("spatial")
@@ -82,18 +82,18 @@ def main() -> None:
             raise SystemExit(f"GeoPackage layer {layer}: {n_gpkg} rows, expected {n_src}")
 
     for name in ("manifest.json", "scenario.yaml", "metrics.json", "corrections.json"):
-        shutil.copy(a.run / name, out / "metadati" / name)
-    shutil.copy(REFERENCE / "d34" / "campi.md", out / "metadati" / "campi.md")
+        shutil.copy(a.run / name, out / "metadata" / name)
+    shutil.copy(REFERENCE / "d34" / "FIELDS.md", out / "metadata" / "FIELDS.md")
 
     units = pd.read_parquet(a.units_input)
-    units.to_csv(out / "ingresso" / "comuni-livelli-popolazione.csv", index=False)
-    shutil.copy(a.services, out / "ingresso" / "servizi-2025.csv")
-    shutil.copy(REFERENCE / "corrections.csv", out / "ingresso" / "correzioni.csv")
-    shutil.copy(REFERENCE / "fusions-2021-2025.csv", out / "ingresso" / "fusioni-2021-2025.csv")
+    units.to_csv(out / "input" / "municipalities-levels-population.csv", index=False)
+    shutil.copy(a.services, out / "input" / "services-2025.csv")
+    shutil.copy(REFERENCE / "corrections.csv", out / "input" / "corrections.csv")
+    shutil.copy(REFERENCE / "fusions-2021-2025.csv", out / "input" / "fusions-2021-2025.csv")
 
-    readme = (REFERENCE / "d34" / "LEGGIMI.md").read_text()
-    (out / "LEGGIMI.md").write_text(readme.replace("{version}", a.version))
-    shutil.copy(REFERENCE / "d34" / "LICENZA-DATI.md", out / "LICENZA-DATI.md")
+    readme = (REFERENCE / "d34" / "README.md").read_text()
+    (out / "README.md").write_text(readme.replace("{version}", a.version))
+    shutil.copy(REFERENCE / "d34" / "DATA-LICENSE.md", out / "DATA-LICENSE.md")
 
     files = sorted(p for p in out.rglob("*") if p.is_file())
     (out / "SHA256SUMS").write_text(

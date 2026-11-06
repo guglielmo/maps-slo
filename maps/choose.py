@@ -50,7 +50,7 @@ def minimisers(a: pd.DataFrame, lams: np.ndarray, cost: str = "K1q_mean_squared_
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("calibration", type=Path)
-    ap.add_argument("--fixed-border", action="store_true", help="keep the agreed 3.09%")
+    ap.add_argument("--fixed-border", action="store_true", help="keep the agreed 3.09%%")
     ap.add_argument("--fixed-pairs", action="store_true", help="keep the agreed pairs table")
     ap.add_argument("--lambda-max", type=float, default=20.0)
     ap.add_argument("--lambda-step", type=float, default=0.05)
