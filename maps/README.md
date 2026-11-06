@@ -32,4 +32,11 @@ Not part of the installable package. Run once, in order:
     `python maps/prepare/build_units.py maps/data/population-2025.csv output/levels-d16/levels.parquet
     maps/data/units-2025-d16.parquet` and `maps-slo run maps/scenarios/maps-2025-d16.yaml --out output/maps-2025-d16`
 
+13. package of the MAPS deliverable D3.4 (national dataset, versioned, revisable): run the chosen
+    scenario from a clean commit, then corrections (step 9) and GeoJSON (step 10) on it, then
+    `python maps/package_d34.py <run>-corrected <run>-corrected/geo --version 1.0
+    --units-input maps/data/units-2025-d16.parquet --services maps/data/services-2025.csv
+    --out output/D3.4-SLO-2025-v1.0` (GeoPackage, GeoJSON, CSV, metadata, redistributable inputs;
+    texts in `maps/reference/d34/`; the travel-time matrix is not included)
+
 `maps/data/` is not versioned. The GSSI data (Stata routine and input files of 16/10/2026) are provided by GSSI and are not redistributed here.
