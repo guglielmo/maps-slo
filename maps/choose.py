@@ -2,6 +2,11 @@
 
     python maps/choose.py output/calibration-2025-d16-cost/calibration.parquet
     python maps/choose.py ... --fixed-border --fixed-pairs     # only the time threshold varies
+    python maps/choose.py ... --cost errq_all                  # assignment error as the cost
+
+The cost term defaults to K1q; with --cost any column of calibration.parquet or of
+assignment.parquet (maps/assignment.py, read from the same directory when present) can be used,
+for instance errq_all, the squared assignment error summed over the services.
 
 Energy of a configuration, to be minimised among the admissible ones:
 
@@ -35,8 +40,8 @@ def admissible(x: pd.DataFrame, ref: pd.Series) -> pd.Series:
             & (x.V5_non_contiguous_systems <= ref.V5_non_contiguous_systems))
 
 
-def minimisers(a: pd.DataFrame, lams: np.ndarray) -> pd.DataFrame:
-    rows = [(lam, (a.K1q_mean_squared_extra - lam * a.K5pp).idxmin()) for lam in lams]
+def minimisers(a: pd.DataFrame, lams: np.ndarray, cost: str = "K1q_mean_squared_extra") -> pd.DataFrame:
+    rows = [(lam, (a[cost] - lam * a.K5pp).idxmin()) for lam in lams]
     w = pd.DataFrame(rows, columns=["lam", "k"])
     return w.groupby("k", sort=False).lam.agg(["min", "max"]).rename(
         columns={"min": "lambda_from", "max": "lambda_to"})
@@ -49,8 +54,18 @@ def main() -> None:
     ap.add_argument("--fixed-pairs", action="store_true", help="keep the agreed pairs table")
     ap.add_argument("--lambda-max", type=float, default=20.0)
     ap.add_argument("--lambda-step", type=float, default=0.05)
+    ap.add_argument("--cost", default="K1q_mean_squared_extra",
+                    help="cost column (calibration.parquet or assignment.parquet)")
     a = ap.parse_args()
     x = pd.read_parquet(a.calibration)
+    extra = a.calibration.parent / "assignment.parquet"
+    if extra.exists():
+        y = pd.read_parquet(extra)
+        if len(y) != len(x):
+            raise SystemExit(f"{extra} has {len(y)} rows, {a.calibration} has {len(x)}")
+        x = pd.concat([x, y], axis=1)
+    if a.cost not in x:
+        raise SystemExit(f"unknown cost column {a.cost}")
     x["K5pp"] = x.K5_pop_share_service_centre * 100
     agreed = x[(x.pairs == AGREED["pairs"]) & np.isclose(x.min_shared_share, AGREED["min_shared_share"])
                & (x.max_minutes == AGREED["max_minutes"])]
@@ -63,9 +78,9 @@ def main() -> None:
         x = x[x.pairs == AGREED["pairs"]]
     adm = x[admissible(x, ref)]
     lams = np.round(np.arange(0, a.lambda_max + 1e-9, a.lambda_step), 6)
-    w = minimisers(adm, lams)
+    w = minimisers(adm, lams, a.cost)
     cols = ["pairs", "min_shared_share", "max_minutes", "V2_n_systems", "K1_access_cost",
-            "K1q_mean_squared_extra", "K5pp", "K3_pop_share_over_30", "V5_non_contiguous_systems",
+            "K1q_mean_squared_extra", *([a.cost] if a.cost != "K1q_mean_squared_extra" else []), "K5pp", "K3_pop_share_over_30", "V5_non_contiguous_systems",
             "K7_corrections_produced", "stability_max_changed_share"]
     table = w.join(adm[cols])
     pd.set_option("display.width", 250)
